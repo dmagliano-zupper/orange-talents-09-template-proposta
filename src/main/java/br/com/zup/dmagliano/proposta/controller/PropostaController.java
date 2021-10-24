@@ -14,7 +14,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.Properties;
 
 @RestController
 @RequestMapping("/propostas")
@@ -26,10 +25,14 @@ public class PropostaController {
     @PostMapping
     @Transactional
     public ResponseEntity<?> criarProposta(@RequestBody @Valid PropostaRequest propostaRequest, UriComponentsBuilder uriComponentsBuilder) {
+        if (propostaRepository.existsByDocumento(propostaRequest.getDocumento()))
+            return ResponseEntity.status(422).build();
+
         Proposta proposta = propostaRequest.toEntity();
         propostaRepository.save(proposta);
         URI uri = uriComponentsBuilder.path("/propostas/{id}").buildAndExpand(proposta.getId()).toUri();
         return ResponseEntity.created(uri).build();
+
     }
 
 }

@@ -4,4 +4,5 @@ import br.com.zup.dmagliano.proposta.model.Proposta;
 import org.springframework.data.repository.CrudRepository;
 
 public interface PropostaRepository extends CrudRepository<Proposta, Long> {
+    boolean existsByDocumento(String documento);
 }
