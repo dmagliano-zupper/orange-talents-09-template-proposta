@@ -1,8 +1,12 @@
 package br.com.zup.dmagliano.proposta.controller;
 
+import br.com.zup.dmagliano.proposta.dto.AnalisePropostaResponseDto;
 import br.com.zup.dmagliano.proposta.dto.PropostaRequest;
+import br.com.zup.dmagliano.proposta.enums.ResultadoSolicitacao;
+import br.com.zup.dmagliano.proposta.integration.AnalisePropostaClient;
 import br.com.zup.dmagliano.proposta.model.Proposta;
 import br.com.zup.dmagliano.proposta.repository.PropostaRepository;
+import feign.FeignException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +25,8 @@ public class PropostaController {
 
     @Autowired
     PropostaRepository propostaRepository;
+    @Autowired
+    AnalisePropostaClient analisePropostaClient;
 
     @PostMapping
     @Transactional
@@ -31,7 +37,22 @@ public class PropostaController {
         Proposta proposta = propostaRequest.toEntity();
         propostaRepository.save(proposta);
         URI uri = uriComponentsBuilder.path("/propostas/{id}").buildAndExpand(proposta.getId()).toUri();
+        analiseRestricoes(proposta);
         return ResponseEntity.created(uri).build();
+    }
+
+    public void analiseRestricoes(Proposta proposta) {
+
+        try {
+            AnalisePropostaResponseDto responseDto = analisePropostaClient.processa(proposta.paraAnaliseDto());
+            if (responseDto.getResultadoSolicitacao() == ResultadoSolicitacao.SEM_RESTRICAO) {
+                proposta.retiraRestricaoPropostas();
+                propostaRepository.save(proposta);
+            }
+        } catch (FeignException.UnprocessableEntity ex) {
+
+        }
+
 
     }
 
