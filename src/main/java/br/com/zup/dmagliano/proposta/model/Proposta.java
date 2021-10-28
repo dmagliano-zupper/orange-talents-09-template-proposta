@@ -3,6 +3,8 @@ package br.com.zup.dmagliano.proposta.model;
 import br.com.zup.dmagliano.proposta.dto.AnalisePropostaRequestDto;
 import br.com.zup.dmagliano.proposta.enums.StatusProposta;
 import br.com.zup.dmagliano.proposta.validator.CPFouCNPJ;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -10,6 +12,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -36,6 +40,11 @@ public class Proposta {
     @Enumerated(EnumType.STRING)
     private StatusProposta statusProposta;
 
+    @OneToOne
+    @JoinColumn(name = "cartao_ID", nullable = true)
+    @Cascade(CascadeType.MERGE)
+    private Cartao cartao;
+
     @Deprecated
     public Proposta() {
     }
@@ -53,6 +62,10 @@ public class Proposta {
         return this.id;
     }
 
+    public String getDocumento() {
+        return documento;
+    }
+
     public StatusProposta getStatusProposta() {
         return statusProposta;
     }
@@ -67,5 +80,22 @@ public class Proposta {
                 this.nome,
                 this.id.toString()
         );
+    }
+
+    public Cartao getCartao() {
+        return cartao;
+    }
+
+    public void AdicionaCartao(Cartao cartao){
+        this.cartao = cartao;
+    }
+
+    @Override
+    public String toString() {
+        return "Proposta{" +
+                "documento='" + documento + '\'' +
+                ", statusProposta=" + statusProposta +
+                ", cartao=" + cartao +
+                '}';
     }
 }
