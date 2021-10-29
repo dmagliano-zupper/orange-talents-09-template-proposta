@@ -25,10 +25,6 @@ public class Cartao {
     public Cartao() {
     }
 
-    public String getIdCartao() {
-        return idCartao;
-    }
-
     public Cartao(String idCartao, String emitidoEm, String titular,
                   Integer limite, Integer vencimento) {
         this.idCartao = idCartao;
@@ -48,5 +44,9 @@ public class Cartao {
                 ", limite=" + limite +
                 ", vencimento=" + vencimento +
                 '}';
+    }
+
+    public String getUltimosDigitosCartao(){
+        return idCartao.substring(this.idCartao.length(),-4);
     }
 }
