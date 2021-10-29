@@ -1,6 +1,7 @@
 package br.com.zup.dmagliano.proposta.model;
 
 import br.com.zup.dmagliano.proposta.dto.AnalisePropostaRequestDto;
+import br.com.zup.dmagliano.proposta.dto.PropostaConsultaResponseDto;
 import br.com.zup.dmagliano.proposta.enums.StatusProposta;
 import br.com.zup.dmagliano.proposta.validator.CPFouCNPJ;
 import org.hibernate.annotations.Cascade;
@@ -70,11 +71,11 @@ public class Proposta {
         return statusProposta;
     }
 
-    public void retiraRestricaoPropostas(){
+    public void retiraRestricaoPropostas() {
         this.statusProposta = StatusProposta.ELEGIVEL;
     }
 
-    public AnalisePropostaRequestDto paraAnaliseDto(){
+    public AnalisePropostaRequestDto paraAnaliseDto() {
         return new AnalisePropostaRequestDto(
                 this.documento,
                 this.nome,
@@ -86,7 +87,7 @@ public class Proposta {
         return cartao;
     }
 
-    public void AdicionaCartao(Cartao cartao){
+    public void AdicionaCartao(Cartao cartao) {
         this.cartao = cartao;
     }
 
@@ -97,5 +98,12 @@ public class Proposta {
                 ", statusProposta=" + statusProposta +
                 ", cartao=" + cartao +
                 '}';
+    }
+
+    public PropostaConsultaResponseDto toConsultaResponse() {
+        return new PropostaConsultaResponseDto(
+                this.id,
+                this.statusProposta.toString()
+        );
     }
 }
