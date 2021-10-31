@@ -21,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Transactional
 class PropostaControllerTest {
 
     @Autowired
@@ -31,13 +32,12 @@ class PropostaControllerTest {
     private PropostaRepository propostaRepository;
 
     @Test
-    @Transactional
     void deveRetornar201AoCriarPropostaComSucesso() throws Exception {
         URI uri = new URI("/propostas");
         PropostaRequest request = new PropostaRequest(
                 "12840791048",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
+                "usuarioteste1@gmail.com",
+                "Usuario Teste1",
                 "Rua A numero 1, casa 3",
                 BigDecimal.valueOf(1599.99)
         );
@@ -54,10 +54,10 @@ class PropostaControllerTest {
     void deveRetonarURIdaNovaPropostaComSucesso() throws Exception {
         URI uri = new URI("/propostas");
         PropostaRequest request = new PropostaRequest(
-                "12840791048",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
-                "Rua A numero 1, casa 3",
+                "15513066033",
+                "usuarioteste2@gmail.com",
+                "Usuario Teste2",
+                "Rua A numero 2, casa 3",
                 BigDecimal.valueOf(1599.99)
         );
         String requestJson = gson.toJson(request);
@@ -74,9 +74,9 @@ class PropostaControllerTest {
         URI uri = new URI("/propostas");
         PropostaRequest request = new PropostaRequest(
                 "00000000000",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
-                "Rua A numero 1, casa 3",
+                "usuarioteste3@gmail.com",
+                "Usuario Teste3",
+                "Rua A numero 3, casa 3",
                 BigDecimal.valueOf(1599.99)
         );
         String requestJson = gson.toJson(request);
@@ -92,9 +92,9 @@ class PropostaControllerTest {
     void deveRetonar400NovaPropostaFaltandoEndereco() throws Exception {
         URI uri = new URI("/propostas");
         PropostaRequest request = new PropostaRequest(
-                "12840791048",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
+                "21626340072",
+                "usuarioteste4@gmail.com",
+                "Usuario Teste4",
                 "",
                 BigDecimal.valueOf(1599.99)
         );
@@ -111,10 +111,10 @@ class PropostaControllerTest {
     void deveRetonar422DocumentoJaCadastrado() throws Exception {
 
         Proposta proposta = new Proposta(
-                "12840791048",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
-                "Rua A numero 1, casa 3",
+                "77979282078",
+                "usuarioteste5@gmail.com",
+                "Usuario Teste5",
+                "Rua A numero 5, casa 3",
                 BigDecimal.valueOf(1599.99)
         );
 
@@ -122,10 +122,10 @@ class PropostaControllerTest {
 
         URI uri = new URI("/propostas");
         PropostaRequest request = new PropostaRequest(
-                "12840791048",
-                "usuarioteste@gmail.com",
-                "Usuario Teste",
-                "Rua A numero 1, casa 3",
+                "77979282078",
+                "usuarioteste5@gmail.com",
+                "Usuario Teste5",
+                "Rua A numero 5, casa 3",
                 BigDecimal.valueOf(1599.99)
         );
         String requestJson = gson.toJson(request);
@@ -135,7 +135,30 @@ class PropostaControllerTest {
                 .content(requestJson)
         ).andExpect(MockMvcResultMatchers.status().is(422));
 
-        propostaRepository.delete(proposta);
+    }
+
+    @Test
+    void deveRetornar201ComStatusDaProposta() throws Exception {
+
+        Proposta proposta = new Proposta(
+                "11430303034",
+                "usuarioteste6@gmail.com",
+                "Usuario Teste6",
+                "Rua A numero 6, casa 3",
+                BigDecimal.valueOf(1599.99)
+        );
+        proposta.retiraRestricaoPropostas();
+        propostaRepository.save(proposta);
+
+        Long id = proposta.getId();
+
+        URI uri = new URI("/propostas/" + id);
+
+        mockMvc.perform(MockMvcRequestBuilders.get(uri)
+                .contentType(MediaType.APPLICATION_JSON)
+        ).andExpect(MockMvcResultMatchers.status().is(200));
+
+
     }
 
 }
