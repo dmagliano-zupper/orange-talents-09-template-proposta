@@ -47,6 +47,6 @@ public class Cartao {
     }
 
     public String getUltimosDigitosCartao(){
-        return idCartao.substring(this.idCartao.length(),-4);
+        return idCartao.substring(this.idCartao.length()-4);
     }
 }
