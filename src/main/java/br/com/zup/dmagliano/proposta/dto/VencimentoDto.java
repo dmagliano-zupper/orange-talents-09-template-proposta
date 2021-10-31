@@ -6,6 +6,12 @@ public class VencimentoDto {
     private Integer dia;
     private String dataDeCriacao;
 
+    public VencimentoDto(String id, Integer dia, String dataDeCriacao) {
+        this.id = id;
+        this.dia = dia;
+        this.dataDeCriacao = dataDeCriacao;
+    }
+
     public Integer getDia() {
         return dia;
     }
