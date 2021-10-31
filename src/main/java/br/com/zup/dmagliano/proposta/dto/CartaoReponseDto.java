@@ -1,20 +1,15 @@
 package br.com.zup.dmagliano.proposta.dto;
 
 import br.com.zup.dmagliano.proposta.model.Cartao;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import java.util.List;
-
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CartaoReponseDto {
 
     private String id;
     private String emitidoEm;
     private String titular;
-    private List<BloqueiosDto> bloqueios;
-    private List<AvisosDto> avisos;
-    private List<CarteirasDto> carteiras;
-    private List<ParcelasDto> parcelas;
     private Integer limite;
-    private RenegociacaoDto renegociacao;
     private VencimentoDto vencimento;
     private String idProposta;
 
@@ -22,6 +17,15 @@ public class CartaoReponseDto {
     public CartaoReponseDto() {
     }
 
+    public CartaoReponseDto(String id, String emitidoEm, String titular, Integer limite,
+                            VencimentoDto vencimento, String idProposta) {
+        this.id = id;
+        this.emitidoEm = emitidoEm;
+        this.titular = titular;
+        this.limite = limite;
+        this.vencimento = vencimento;
+        this.idProposta = idProposta;
+    }
 
     public String getId() {
         return id;
@@ -33,10 +37,6 @@ public class CartaoReponseDto {
 
     public String getTitular() {
         return titular;
-    }
-
-    public List<AvisosDto> getAvisos() {
-        return avisos;
     }
 
     public Integer getLimite() {
