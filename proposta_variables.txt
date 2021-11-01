@@ -1,0 +1,10 @@
+DATASOURCE_URL=jdbc:mysql://propostas-db:3306/proposta
+MYSQL_USER=user
+MYSQL_PASSWORD=123456
+ANALISE_PROPOSTA_URL=http://host.docker.internal:9999/api/solicitacao
+SERVICO_CARTOES_URL=http://host.docker.internal:8888/api/cartoes
+NOME_DA_APLICACAO=servico-propostas
+AMBIENTE=homolog
+JAEGER_ENABLED=true
+JAEGER_ENDPOINT=http://host.docker.internal:14268/api/traces
+JAEGER_SAMPLER=1

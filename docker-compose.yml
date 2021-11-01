@@ -1,0 +1,34 @@
+services:
+  app:
+    image: dmagliano/proposta:latest
+    env_file: proposta_variables.txt
+    build: .
+    ports:
+      - '8080:8080'
+    depends_on:
+      propostas-db:
+        condition: service_healthy
+
+  propostas-db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: 'proposta'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: '123456'
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
+    volumes:
+      - volume-proposta:/Projetos/volume-proposta
+    healthcheck:
+      test: "/usr/bin/mysql --user=root --password=password --execute \"SHOW DATABASES;\""
+      interval: 2s
+      timeout: 30s
+      retries: 15
+
+volumes:
+  volume-proposta:
