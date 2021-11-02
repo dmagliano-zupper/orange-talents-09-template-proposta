@@ -4,10 +4,13 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToOne;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Cartao {
@@ -20,6 +23,10 @@ public class Cartao {
     private String titular;
     private Integer limite;
     private Integer vencimento;
+
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "cartao")
+    @Cascade(value = CascadeType.MERGE)
+    private List<Biometria> biometrias = new ArrayList<>();
 
     @Deprecated
     public Cartao() {
@@ -48,5 +55,9 @@ public class Cartao {
 
     public String getUltimosDigitosCartao(){
         return idCartao.substring(this.idCartao.length()-4);
+    }
+
+    public void setBiometrias(List<Biometria> biometrias) {
+        this.biometrias = biometrias;
     }
 }
