@@ -45,6 +45,10 @@ public class Cartao {
         this.vencimento = vencimento;
     }
 
+    public String getIdCartao() {
+        return idCartao;
+    }
+
     public String getUltimosDigitosCartao() {
         return idCartao.substring(this.idCartao.length() - 4);
     }

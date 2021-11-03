@@ -2,7 +2,12 @@ package br.com.zup.dmagliano.proposta.constants;
 
 public final class ConstantsProposta {
 
+    private ConstantsProposta() {
+        throw new IllegalStateException("As constantes devem ser importadas");
+    }
+
     public static final int INTERVALO_CONSULTA_CARTAO = 45 *1000;
+    public static final int INTERVALO_CONSULTA_BLOQUEIO = 120 *1000;
 
     public static final String BIOMETRIA_TAMANHO_EXCEDIDO = "O tamanho do arquivo excede 10mb";
     public static final String BIOMETRIA_FORMATO_INVALIDO = "Formato de arquivo não aceito";

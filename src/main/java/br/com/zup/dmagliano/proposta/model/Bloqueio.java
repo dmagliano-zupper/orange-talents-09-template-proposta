@@ -1,13 +1,15 @@
 package br.com.zup.dmagliano.proposta.model;
 
-import javax.persistence.Column;
+import br.com.zup.dmagliano.proposta.enums.CartaoBloqueioEnum;
+
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.validation.constraints.FutureOrPresent;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -28,6 +30,8 @@ public class Bloqueio {
     @JoinColumn(name = "cartao_id")
     private Cartao cartao;
     private Boolean ativo;
+    @Enumerated(EnumType.STRING)
+    private CartaoBloqueioEnum status;
 
     @Deprecated
     public Bloqueio() {
@@ -39,6 +43,11 @@ public class Bloqueio {
         this.dataBloqueio = LocalDateTime.now();
         this.cartao = cartao;
         this.ativo = Boolean.TRUE;
+        this.status = CartaoBloqueioEnum.FALHA;
+    }
+
+    public void setStatus(CartaoBloqueioEnum status) {
+        this.status = status;
     }
 
     public Cartao getCartao() {
