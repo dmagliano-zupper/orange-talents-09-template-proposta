@@ -24,6 +24,10 @@ public class Cartao {
     private Integer limite;
     private Integer vencimento;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "cartao")
+    @Cascade(value = CascadeType.MERGE)
+    private List<Bloqueio> bloqueios = new ArrayList<>();
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "cartao")
     @Cascade(value = CascadeType.MERGE)
     private List<Biometria> biometrias = new ArrayList<>();
@@ -41,23 +45,20 @@ public class Cartao {
         this.vencimento = vencimento;
     }
 
-    @Override
-    public String toString() {
-        return "Cartao{" +
-                "id=" + id +
-                ", idCartao='" + idCartao + '\'' +
-                ", emitidoEm='" + emitidoEm + '\'' +
-                ", titular='" + titular + '\'' +
-                ", limite=" + limite +
-                ", vencimento=" + vencimento +
-                '}';
-    }
-
-    public String getUltimosDigitosCartao(){
-        return idCartao.substring(this.idCartao.length()-4);
+    public String getUltimosDigitosCartao() {
+        return idCartao.substring(this.idCartao.length() - 4);
     }
 
     public void setBiometrias(List<Biometria> biometrias) {
         this.biometrias = biometrias;
     }
+
+    public void adicionaBloqueio(Bloqueio bloqueio) {
+        this.bloqueios.add(bloqueio);
+    }
+
+    public List<Bloqueio> getBloqueios() {
+        return bloqueios;
+    }
+
 }

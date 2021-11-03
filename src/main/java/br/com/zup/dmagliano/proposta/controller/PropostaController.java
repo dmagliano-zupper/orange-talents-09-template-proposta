@@ -60,8 +60,7 @@ public class PropostaController {
         return ResponseEntity.created(uri).build();
     }
 
-    @GetMapping
-    @RequestMapping("/{id}")
+    @GetMapping(value = "/{id}")
     public ResponseEntity<PropostaConsultaResponseDto> consultaProposta(@PathVariable Long id) {
         try {
             Proposta proposta = propostaRepository.findById(id).orElseThrow(EntityNotFoundException::new);
