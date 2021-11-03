@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.List;
 
 
@@ -57,6 +58,15 @@ public class ValidationErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
     public FieldErrorOutputDto handleIllegalStateError(IllegalStateException exception) {
+
+        String message = exception.getLocalizedMessage();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public FieldErrorOutputDto handleIllegalStateError(ConstraintViolationException exception) {
 
         String message = exception.getLocalizedMessage();
 
