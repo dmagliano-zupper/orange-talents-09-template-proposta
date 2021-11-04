@@ -42,7 +42,7 @@ public class CartaoController {
     @PostMapping(value = "/bloqueio/{idCartao}")
     @Transactional
     @Validated
-    public ResponseEntity<?> postMethodName(@PathVariable("idCartao") String idCartao,
+    public ResponseEntity<?> bloqueioCartao(@PathVariable("idCartao") String idCartao,
                                             @RequestHeader("User-Agent") @NotBlank String userAgent,
                                             HttpServletRequest httpServletRequest) {
 
