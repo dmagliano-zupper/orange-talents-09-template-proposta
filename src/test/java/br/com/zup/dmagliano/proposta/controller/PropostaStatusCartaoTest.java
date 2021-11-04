@@ -9,6 +9,7 @@ import br.com.zup.dmagliano.proposta.integration.AnalisePropostaClient;
 import br.com.zup.dmagliano.proposta.integration.CartoesClient;
 import br.com.zup.dmagliano.proposta.model.Proposta;
 import br.com.zup.dmagliano.proposta.repository.PropostaRepository;
+import feign.FeignException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,9 +17,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 
 @SpringBootTest
+@Transactional
 public class PropostaStatusCartaoTest {
 
     @Autowired
@@ -123,7 +126,76 @@ public class PropostaStatusCartaoTest {
         propostaController.solicitaCartao();
         Assertions.assertTrue(propostaRepository.findAllElegiveisSemCartao().isEmpty());
 
+    }
 
+    @Test
+    void testeCronJobDeveZerarPropostasElegiveisSemCartao(){
+
+        Proposta propostaElegivel = new Proposta(
+                "40007556098",
+                "usuarioElegivel@gmail.com",
+                "Usuario Elegivel",
+                "Rua A numero 9, casa 3",
+                BigDecimal.valueOf(2744.99)
+        );
+        propostaElegivel.retiraRestricaoPropostas();
+        propostaRepository.save(propostaElegivel);
+
+        VencimentoDto vencimentoDto = new VencimentoDto(
+                "999",
+                29,
+                "31/10/2025"
+        );
+
+        CartaoReponseDto cartaResponseDto = new CartaoReponseDto(
+                "8745-5084-2176-8206",
+                "31/10/2025",
+                "Usuario Elegivel",
+                5000,
+                vencimentoDto,
+                propostaElegivel.getId().toString()
+        );
+
+        Mockito.when(cartoesClient.solicitaCartao(Mockito.any())).thenReturn(cartaResponseDto);
+
+        propostaController.solicitaCartao();
+
+        Assertions.assertTrue(propostaRepository.findAllElegiveisSemCartao().isEmpty());
+    }
+
+    @Test
+    void deveTratarFeignExceptionCasoClientRetorneErro(){
+
+        Proposta propostaElegivel = new Proposta(
+                "40007556098",
+                "usuarioElegivel@gmail.com",
+                "Usuario Elegivel",
+                "Rua A numero 9, casa 3",
+                BigDecimal.valueOf(2744.99)
+        );
+        propostaElegivel.retiraRestricaoPropostas();
+        propostaRepository.save(propostaElegivel);
+
+        VencimentoDto vencimentoDto = new VencimentoDto(
+                "999",
+                29,
+                "31/10/2025"
+        );
+
+        CartaoReponseDto cartaResponseDto = new CartaoReponseDto(
+                "8745-5084-2176-8206",
+                "31/10/2025",
+                "Usuario Elegivel",
+                5000,
+                vencimentoDto,
+                propostaElegivel.getId().toString()
+        );
+
+        Mockito.when(cartoesClient.solicitaCartao(Mockito.any())).thenThrow(FeignException.class);
+
+        propostaController.solicitaCartao();
+
+        Assertions.assertTrue((propostaRepository.findAllElegiveisSemCartao().size()) == 1);
     }
 
 }
