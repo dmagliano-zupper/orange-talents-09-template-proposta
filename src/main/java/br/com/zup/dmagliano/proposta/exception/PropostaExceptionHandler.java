@@ -112,6 +112,20 @@ public class PropostaExceptionHandler {
         return new FieldErrorOutputDto("",message);
     }
 
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(FeignException.InternalServerError.class)
+    public FieldErrorOutputDto handleHttpMessageNotReadable(FeignException.InternalServerError exception) {
+
+        logger.warn("Erro, status {} ao processar a request\n {} \n em: {}",
+                exception.status(), exception.request(), LocalDateTime.now());
+
+        String message = exception.contentUTF8();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+
+
     
 
     private ValidationErrorsOutputDto buildValidationErrors(List<ObjectError> globalErrors,
