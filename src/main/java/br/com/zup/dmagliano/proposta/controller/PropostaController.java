@@ -100,10 +100,11 @@ public class PropostaController {
                 try {
                     CartaoReponseDto cartaoResponse = cartoesClient.solicitaCartao(proposta.paraAnaliseDto());
                     Cartao cartao = cartaoResponse.toEntity();
-                    proposta.AdicionaCartao(cartao);
+                    proposta.adicionaCartao(cartao);
                     propostaRepository.save(proposta);
                     logger.info("CRON CONSULTA CARTÕES - Cartao *.{} adicionado a proposta {}", cartao.getUltimosDigitosCartao(), proposta.getDocumento());
                 } catch (FeignException ex) {
+                    //qual proposta deu erro
                     logger.info("CRON CONSULTA CARTÕES - CartaoCliente não respondeu, aguardando próxima consulta");
                 }
             }
