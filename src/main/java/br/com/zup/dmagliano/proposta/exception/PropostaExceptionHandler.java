@@ -1,4 +1,4 @@
-package br.com.zup.dmagliano.proposta.validator;
+package br.com.zup.dmagliano.proposta.exception;
 
 import br.com.zup.dmagliano.proposta.validator.dto.FieldErrorOutputDto;
 import br.com.zup.dmagliano.proposta.validator.dto.ValidationErrorsOutputDto;
@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 
 @RestControllerAdvice
-public class ValidationErrorHandler {
+public class PropostaExceptionHandler {
 
     @Autowired
     private MessageSource messageSource;
@@ -72,6 +74,27 @@ public class ValidationErrorHandler {
 
         return new FieldErrorOutputDto("",message);
     }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(EntityNotFoundException.class)
+    public FieldErrorOutputDto handleEntityNotFound(EntityNotFoundException exception) {
+
+        String message = exception.getLocalizedMessage();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DateTimeParseException.class)
+    public FieldErrorOutputDto handleHttpMessageNotReadable(DateTimeParseException exception) {
+
+        String message = exception.getLocalizedMessage();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+    
 
     private ValidationErrorsOutputDto buildValidationErrors(List<ObjectError> globalErrors,
                                                             List<FieldError> fieldErrors) {
