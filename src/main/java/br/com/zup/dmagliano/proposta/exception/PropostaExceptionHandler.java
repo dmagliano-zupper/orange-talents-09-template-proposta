@@ -3,6 +3,7 @@ package br.com.zup.dmagliano.proposta.exception;
 import br.com.zup.dmagliano.proposta.controller.PropostaController;
 import br.com.zup.dmagliano.proposta.validator.dto.FieldErrorOutputDto;
 import br.com.zup.dmagliano.proposta.validator.dto.ValidationErrorsOutputDto;
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import feign.FeignException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,15 @@ public class PropostaExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public FieldErrorOutputDto handleIllegalArgumentError(IllegalArgumentException exception) {
+
+        String message = exception.getLocalizedMessage();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(InvalidFormatException.class)
+    public FieldErrorOutputDto handleInvalidFormatException(InvalidFormatException exception) {
 
         String message = exception.getLocalizedMessage();
 

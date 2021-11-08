@@ -1,6 +1,10 @@
 package br.com.zup.dmagliano.proposta.model;
 
+import br.com.zup.dmagliano.proposta.enums.CarteiraDigitalEnum;
+
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,8 +22,8 @@ public class Carteira {
     private Long id;
     @NotBlank
     private String idCarteira;
-    @NotBlank
-    private String emissor;
+    @Enumerated(EnumType.STRING)
+    private CarteiraDigitalEnum emissor;
     @NotBlank
     @Email
     private String email;
@@ -32,7 +36,7 @@ public class Carteira {
     public Carteira() {
     }
 
-    public Carteira(String idCarteira, String emissor, String email, Cartao cartao) {
+    public Carteira(String idCarteira, CarteiraDigitalEnum emissor, String email, Cartao cartao) {
         this.idCarteira = idCarteira;
         this.emissor = emissor;
         this.email = email;
