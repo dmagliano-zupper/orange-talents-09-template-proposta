@@ -1,6 +1,8 @@
 package br.com.zup.dmagliano.proposta.integration;
 
 import br.com.zup.dmagliano.proposta.dto.AnalisePropostaRequestDto;
+import br.com.zup.dmagliano.proposta.dto.AvisoViagemDto;
+import br.com.zup.dmagliano.proposta.dto.AvisoViagemResponseDto;
 import br.com.zup.dmagliano.proposta.dto.CartaoResponseBloqueioDto;
 import br.com.zup.dmagliano.proposta.dto.CartaoReponseDto;
 import br.com.zup.dmagliano.proposta.dto.CartaoRequestBloqueioDto;
@@ -21,5 +23,8 @@ public interface CartoesClient {
     CartaoResponseBloqueioDto informaBloqueio(@RequestBody CartaoRequestBloqueioDto cartaoRequestBloqueioDto,
                                               @PathVariable("id") String cartaoId);
 
+    @PostMapping(value = "${cartoes.viagem}")
+    AvisoViagemResponseDto avisoViagem(@RequestBody AvisoViagemDto avisoViagemDto,
+                                       @PathVariable("id") String cartaoId);
 
 }
