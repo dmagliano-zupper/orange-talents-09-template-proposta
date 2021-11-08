@@ -87,7 +87,7 @@ public class Proposta {
         return cartao;
     }
 
-    public void AdicionaCartao(Cartao cartao) {
+    public void adicionaCartao(Cartao cartao) {
         this.cartao = cartao;
     }
 
