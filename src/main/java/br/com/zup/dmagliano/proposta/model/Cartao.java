@@ -25,7 +25,7 @@ public class Cartao {
     private Integer vencimento;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "cartao")
-    @Cascade(value = CascadeType.MERGE)
+    @Cascade(value = CascadeType.PERSIST)
     private List<Bloqueio> bloqueios = new ArrayList<>();
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "cartao")

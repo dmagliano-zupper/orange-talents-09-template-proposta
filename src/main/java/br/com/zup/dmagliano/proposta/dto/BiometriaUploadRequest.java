@@ -14,6 +14,14 @@ public class BiometriaUploadRequest {
     @Valid
     private List<MultipartFile> biometrias = new ArrayList<>();
 
+    @Deprecated
+    public BiometriaUploadRequest() {
+    }
+
+    public BiometriaUploadRequest(List<MultipartFile> biometrias) {
+        this.biometrias = biometrias;
+    }
+
     public List<MultipartFile> getBiometrias() {
         return biometrias;
     }
