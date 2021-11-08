@@ -8,6 +8,7 @@ import br.com.zup.dmagliano.proposta.model.Bloqueio;
 import br.com.zup.dmagliano.proposta.model.Cartao;
 import br.com.zup.dmagliano.proposta.repository.BloqueioRepository;
 import br.com.zup.dmagliano.proposta.repository.CartaoRepository;
+import br.com.zup.dmagliano.proposta.utils.ResquestIpIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -37,6 +38,8 @@ public class CartaoController {
     @Autowired
     BloqueioRepository bloqueioRepository;
     @Autowired
+    ResquestIpIdentifier resquestIpIdentifier;
+    @Autowired
     CartoesClient cartoesClient;
 
     @PostMapping(value = "/bloqueio/{idCartao}")
@@ -57,9 +60,11 @@ public class CartaoController {
             return ResponseEntity.unprocessableEntity().build();
         }
 
+        String ipRequest = resquestIpIdentifier.requestIp(httpServletRequest);
+
         Bloqueio bloqueio = new Bloqueio(
                 userAgent,
-                obtemIpRequisicao(httpServletRequest),
+                ipRequest,
                 cartao
         );
 
@@ -77,31 +82,18 @@ public class CartaoController {
 
         try {
             CartaoResponseBloqueioDto responseBloqueioDto = cartoesClient
-                    .informaBloqueio(cartaoRequestBloqueioDto,idCartao);
+                    .informaBloqueio(cartaoRequestBloqueioDto, idCartao);
             bloqueio.setStatus(responseBloqueioDto.getResultado());
         } catch (Exception ex) {
             bloqueio.setStatus(CartaoBloqueioEnum.FALHA);
         }
     }
 
-    private static String obtemIpRequisicao(HttpServletRequest request) {
-
-        String remoteAddr = "";
-
-        if (request != null) {
-            remoteAddr = request.getHeader("X-FORWARDED-FOR");
-            if (remoteAddr == null || "".equals(remoteAddr)) {
-                remoteAddr = request.getRemoteAddr();
-            }
-        }
-
-        return remoteAddr;
-    }
 
     @Scheduled(fixedDelay = INTERVALO_CONSULTA_BLOQUEIO)
     public void retestaBloqueioComFalha() {
 
-        List<Bloqueio> bloqueiosComFalha =  bloqueioRepository.findAllByStatus(CartaoBloqueioEnum.FALHA);
+        List<Bloqueio> bloqueiosComFalha = bloqueioRepository.findAllByStatus(CartaoBloqueioEnum.FALHA);
 
         List<Bloqueio> bloqueiosProcessados = bloqueiosComFalha.stream().map(bloqueio -> {
             solicitaBloqueio(bloqueio, bloqueio.getCartao().getIdCartao());
