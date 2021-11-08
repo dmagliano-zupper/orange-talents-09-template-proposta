@@ -5,6 +5,7 @@ ANALISE_PROPOSTA_URL=http://host.docker.internal:9999/api/solicitacao
 SERVICO_CARTOES_URL=http://host.docker.internal:8888/api/cartoes
 CARTOES_BLOQUEIO_URL=/{id}/bloqueios
 CARTOES_VIAGEM_URL=/{id}/avisos
+CARTOES_CARTEIRA_URL:/{id}/carteiras
 NOME_DA_APLICACAO=servico-propostas
 AMBIENTE=homolog
 JAEGER_ENABLED=true
