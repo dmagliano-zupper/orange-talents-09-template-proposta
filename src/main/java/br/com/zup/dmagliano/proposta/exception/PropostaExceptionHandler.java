@@ -1,7 +1,11 @@
 package br.com.zup.dmagliano.proposta.exception;
 
+import br.com.zup.dmagliano.proposta.controller.PropostaController;
 import br.com.zup.dmagliano.proposta.validator.dto.FieldErrorOutputDto;
 import br.com.zup.dmagliano.proposta.validator.dto.ValidationErrorsOutputDto;
+import feign.FeignException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -16,12 +20,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.ConstraintViolationException;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
 
 @RestControllerAdvice
 public class PropostaExceptionHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(PropostaExceptionHandler.class);
 
     @Autowired
     private MessageSource messageSource;
@@ -84,12 +91,23 @@ public class PropostaExceptionHandler {
         return new FieldErrorOutputDto("",message);
     }
 
-
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DateTimeParseException.class)
     public FieldErrorOutputDto handleHttpMessageNotReadable(DateTimeParseException exception) {
 
         String message = exception.getLocalizedMessage();
+
+        return new FieldErrorOutputDto("",message);
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(FeignException.UnprocessableEntity.class)
+    public FieldErrorOutputDto handleHttpMessageNotReadable(FeignException exception) {
+
+        logger.warn("Erro, status {} ao processar a request\n {} \n em: {}",
+                exception.status(), exception.request(), LocalDateTime.now());
+
+        String message = exception.contentUTF8();
 
         return new FieldErrorOutputDto("",message);
     }
