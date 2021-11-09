@@ -16,6 +16,8 @@ import br.com.zup.dmagliano.proposta.repository.BloqueioRepository;
 import br.com.zup.dmagliano.proposta.repository.CartaoRepository;
 import br.com.zup.dmagliano.proposta.repository.CarteiraRepository;
 import br.com.zup.dmagliano.proposta.utils.ResquestIpIdentifier;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +50,7 @@ import static br.com.zup.dmagliano.proposta.constants.ConstantsProposta.INTERVAL
 public class CartaoController {
 
     private final Logger logger = LoggerFactory.getLogger(CartaoController.class);
+    private final Tracer tracer;
 
     @Autowired
     CartaoRepository cartaoRepository;
@@ -63,6 +66,10 @@ public class CartaoController {
     @Autowired
     CartoesClient cartoesClient;
 
+    public CartaoController(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
     @PostMapping(value = "/bloqueio/{idCartao}")
     @Transactional
     @Validated
@@ -70,9 +77,13 @@ public class CartaoController {
                                             @RequestHeader("User-Agent") @NotBlank String userAgent,
                                             HttpServletRequest httpServletRequest) {
 
+        Span activeSpan = tracer.activeSpan();;
+        activeSpan.log(idCartao);
+
         Cartao cartao = encontraCartao(idCartao);
 
         if (bloqueioRepository.existsByIdCartaoAndAtivo(cartao)) {
+            activeSpan.log("falha.bloqueio.ativo");
             return ResponseEntity.unprocessableEntity().build();
         }
 
@@ -104,6 +115,8 @@ public class CartaoController {
 
         avisoViagemSistemaExterno(avisoViagemDto, cartao);
 
+        Span activeSpan = tracer.activeSpan();;
+        activeSpan.log("Registro de viagem notificado com sucesso para cartão " + idCartao);
         logger.info("Registro de viagem notificado com sucesso");
         String ipRequest = resquestIpIdentifier.requestIp(httpServletRequest);
 
@@ -114,8 +127,9 @@ public class CartaoController {
                 avisoViagemDto.getValidoAte(),
                 cartao
         );
-        logger.info("Salvando registro de viagem para {} valido até {} para cartão {}",
-                avisoViagemDto.getDestino(), avisoViagemDto.getValidoAte(), cartao.getUltimosDigitosCartao());
+        logger.info("Salvando registro de viagem para "+ avisoViagemDto.getDestino() +
+                        " valido até "+avisoViagemDto.getValidoAte()+" para cartão "+cartao.getUltimosDigitosCartao());
+        activeSpan.log("Registro de viagem notificado com sucesso para cartão " + idCartao);
 
         avisoViagemRepository.save(avisoViagem);
     }

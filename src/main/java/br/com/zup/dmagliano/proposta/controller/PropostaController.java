@@ -11,6 +11,8 @@ import br.com.zup.dmagliano.proposta.model.Cartao;
 import br.com.zup.dmagliano.proposta.model.Proposta;
 import br.com.zup.dmagliano.proposta.repository.PropostaRepository;
 import feign.FeignException;
+import io.opentracing.Span;
+import io.opentracing.Tracer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,7 @@ import static br.com.zup.dmagliano.proposta.constants.ConstantsProposta.INTERVAL
 public class PropostaController {
 
     private final Logger logger = LoggerFactory.getLogger(PropostaController.class);
+    private final Tracer tracer;
 
     @Autowired
     PropostaRepository propostaRepository;
@@ -45,10 +48,22 @@ public class PropostaController {
     @Autowired
     CartoesClient cartoesClient;
 
+    public PropostaController(Tracer tracer) {
+        this.tracer = tracer;
+    }
+
 
     @PostMapping
     @Transactional
     public ResponseEntity<UriComponentsBuilder> criarProposta(@RequestBody @Valid PropostaRequest propostaRequest, UriComponentsBuilder uriComponentsBuilder) {
+
+        Span activeSpan = tracer.activeSpan();
+        activeSpan.log("nova.proposta");
+        activeSpan.setTag("user.documento", propostaRequest.getDocumento());
+        activeSpan.setOperationName("nova.proposta");
+        activeSpan.setBaggageItem("documento", propostaRequest.getDocumento());
+        activeSpan.setBaggageItem("email", propostaRequest.getEmail());
+
         if (propostaRepository.existsByDocumento(propostaRequest.getDocumento())) {
             logger.info("Documento com proposta já cadastrada: {}", propostaRequest.getDocumento());
             return ResponseEntity.status(422).build();
