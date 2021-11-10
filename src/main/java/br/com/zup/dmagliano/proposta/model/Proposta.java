@@ -3,10 +3,12 @@ package br.com.zup.dmagliano.proposta.model;
 import br.com.zup.dmagliano.proposta.dto.AnalisePropostaRequestDto;
 import br.com.zup.dmagliano.proposta.dto.PropostaConsultaResponseDto;
 import br.com.zup.dmagliano.proposta.enums.StatusProposta;
+import br.com.zup.dmagliano.proposta.utils.AttributeEncryptor;
 import br.com.zup.dmagliano.proposta.validator.CPFouCNPJ;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -27,6 +29,7 @@ public class Proposta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @CPFouCNPJ
+    @Convert(converter = AttributeEncryptor.class)
     private String documento;
     @Email
     @NotBlank
